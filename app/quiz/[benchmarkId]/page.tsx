@@ -2,8 +2,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { QuizSession } from "@/components/quiz/QuizSession";
-import { getBenchmark } from "@/content/benchmarks";
+import { benchmarks, getBenchmark } from "@/content/benchmarks";
 import { getQuestionsForBenchmark } from "@/content/questions";
+
+export function generateStaticParams() {
+  return benchmarks.map((b) => ({ benchmarkId: b.id }));
+}
 
 export default async function BenchmarkQuizPage({
   params,

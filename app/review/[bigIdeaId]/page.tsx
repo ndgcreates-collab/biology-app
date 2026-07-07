@@ -2,8 +2,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { BenchmarkCard } from "@/components/review/BenchmarkCard";
-import { getBigIdea } from "@/content/bigIdeas";
+import { bigIdeas, getBigIdea } from "@/content/bigIdeas";
 import { getBenchmarksByBigIdea } from "@/content/benchmarks";
+
+export function generateStaticParams() {
+  return bigIdeas.map((b) => ({ bigIdeaId: b.id }));
+}
 
 export default async function BigIdeaReviewPage({
   params,

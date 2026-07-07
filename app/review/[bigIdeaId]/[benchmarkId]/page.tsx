@@ -2,7 +2,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { BenchmarkDetail } from "@/components/review/BenchmarkDetail";
-import { getBenchmark } from "@/content/benchmarks";
+import { benchmarks, getBenchmark } from "@/content/benchmarks";
+
+export function generateStaticParams() {
+  return benchmarks.map((b) => ({ bigIdeaId: b.bigIdeaId, benchmarkId: b.id }));
+}
 
 export default async function BenchmarkReviewPage({
   params,
