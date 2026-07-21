@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Benchmark } from "@/content/schema";
 import { DraftBadge } from "@/components/shared/DraftBadge";
+import { Diagram } from "@/components/diagrams/registry";
 
 export function BenchmarkDetail({ benchmark }: { benchmark: Benchmark }) {
   return (
@@ -12,6 +13,14 @@ export function BenchmarkDetail({ benchmark }: { benchmark: Benchmark }) {
       </div>
 
       <p className="mt-4 text-gray-700 leading-relaxed">{benchmark.summary}</p>
+
+      {benchmark.diagramKeys && benchmark.diagramKeys.length > 0 && (
+        <div className="mt-4 space-y-2">
+          {benchmark.diagramKeys.map((key) => (
+            <Diagram key={key} diagramKey={key} />
+          ))}
+        </div>
+      )}
 
       {benchmark.analogy && (
         <div className="mt-4 rounded-lg bg-emerald-50 p-4 text-sm text-emerald-900 ring-1 ring-inset ring-emerald-200">

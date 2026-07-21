@@ -2,6 +2,21 @@ import { QuizQuestion, draftMeta, POINTS_BY_DIFFICULTY } from "../schema";
 
 export const biodiversityHumanImpactQuestions: QuizQuestion[] = [
   {
+    id: "biodiv-image-1",
+    benchmarkId: "biodiversity-human-impact",
+    type: "multiple-choice",
+    prompt:
+      "In the diagram, the red dots (toxin) increase from the water up to the bird. Which term describes this increase in toxin concentration at each higher level of the food chain?",
+    diagramKey: "biomagnification",
+    choices: ["Biomagnification", "Bioaccumulation", "Eutrophication", "Deforestation"],
+    correctIndex: 0,
+    explanation:
+      "Biomagnification is the increase in toxin concentration up the food chain (bioaccumulation is the buildup within one organism over its lifetime). The top predator — the bird — carries the highest concentration.",
+    difficulty: "hard",
+    points: POINTS_BY_DIFFICULTY.hard,
+    meta: draftMeta(),
+  },
+  {
     id: "biodiv-1",
     benchmarkId: "biodiversity-human-impact",
     type: "multiple-choice",

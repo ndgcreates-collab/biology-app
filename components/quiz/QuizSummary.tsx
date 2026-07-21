@@ -6,11 +6,13 @@ export function QuizSummary({
   total,
   pointsEarned,
   newBadgeNames,
+  gameSubmit = "none",
 }: {
   score: number;
   total: number;
   pointsEarned: number;
   newBadgeNames: string[];
+  gameSubmit?: "none" | "sending" | "sent" | "error";
 }) {
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-6 text-center">
@@ -21,6 +23,18 @@ export function QuizSummary({
       <p className="mt-2 text-emerald-700 font-semibold">
         +{pointsEarned} points earned (includes +{QUIZ_COMPLETION_BONUS} completion bonus)
       </p>
+
+      {gameSubmit === "sending" && (
+        <p className="mt-3 text-sm text-gray-500">Sending your score to your teacher…</p>
+      )}
+      {gameSubmit === "sent" && (
+        <p className="mt-3 text-sm text-emerald-700">✓ Your score was sent to your teacher.</p>
+      )}
+      {gameSubmit === "error" && (
+        <p className="mt-3 text-sm text-rose-600">
+          Couldn&apos;t send your score to your teacher (you may be offline). Your points still counted.
+        </p>
+      )}
 
       {newBadgeNames.length > 0 && (
         <div className="mt-4 rounded-lg bg-amber-50 p-3 text-sm text-amber-900 ring-1 ring-inset ring-amber-200">

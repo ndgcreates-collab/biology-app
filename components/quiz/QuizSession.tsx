@@ -7,6 +7,8 @@ import { InstantFeedback } from "./InstantFeedback";
 import { QuizSummary } from "./QuizSummary";
 import { ProgressBar } from "@/components/shared/ProgressBar";
 import { useProgressStore } from "@/lib/store/useProgressStore";
+import { useGameStore } from "@/lib/store/useGameStore";
+import { submitResult } from "@/lib/supabase/games";
 import { badges } from "@/content/rewards/badges";
 
 export function QuizSession({ topicId, questions }: { topicId: string; questions: QuizQuestion[] }) {
@@ -21,6 +23,7 @@ export function QuizSession({ topicId, questions }: { topicId: string; questions
   const [finished, setFinished] = useState(false);
   const [pointsEarned, setPointsEarned] = useState(0);
   const [newBadgeNames, setNewBadgeNames] = useState<string[]>([]);
+  const [gameSubmit, setGameSubmit] = useState<"none" | "sending" | "sent" | "error">("none");
 
   const recordQuizResult = useProgressStore((s) => s.recordQuizResult);
 
@@ -71,9 +74,34 @@ export function QuizSession({ topicId, questions }: { topicId: string; questions
       const newlyEarnedIds = state.earnedBadgeIds.filter((id) => !earnedBadgesBefore.includes(id));
       const names = badges.filter((b) => newlyEarnedIds.includes(b.id)).map((b) => b.name);
 
-      setPointsEarned(earned + 20);
+      const totalPoints = earned + 20;
+      setPointsEarned(totalPoints);
       setNewBadgeNames(names);
       setFinished(true);
+
+      // If the student is in a game, report this quiz to the teacher.
+      const game = useGameStore.getState();
+      if (game.playerId) {
+        const breakdown: Record<string, { correct: number; total: number }> = {};
+        for (const r of finalResults) {
+          const b = breakdown[r.benchmarkId] ?? { correct: 0, total: 0 };
+          b.total += 1;
+          if (r.correct) b.correct += 1;
+          breakdown[r.benchmarkId] = b;
+        }
+        setGameSubmit("sending");
+        submitResult({
+          playerId: game.playerId,
+          quizId: topicId,
+          benchmarkIds,
+          score: finalResults.filter((r) => r.correct).length,
+          total: finalResults.length,
+          points: totalPoints,
+          breakdown,
+        })
+          .then(() => setGameSubmit("sent"))
+          .catch(() => setGameSubmit("error"));
+      }
       return;
     }
     setCurrentIndex((i) => i + 1);
@@ -89,6 +117,7 @@ export function QuizSession({ topicId, questions }: { topicId: string; questions
         total={questions.length}
         pointsEarned={pointsEarned}
         newBadgeNames={newBadgeNames}
+        gameSubmit={gameSubmit}
       />
     );
   }

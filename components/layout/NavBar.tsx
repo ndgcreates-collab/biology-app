@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { PointsChip } from "@/components/shared/PointsChip";
+import { GameChip } from "@/components/shared/GameChip";
 
 const links = [
   { href: "/", label: "Home" },
@@ -10,6 +11,8 @@ const links = [
   { href: "/quiz", label: "Quiz" },
   { href: "/rewards", label: "Rewards" },
   { href: "/progress", label: "Progress" },
+  { href: "/join", label: "Join" },
+  { href: "/host", label: "Teacher" },
 ];
 
 export function NavBar() {
@@ -40,7 +43,10 @@ export function NavBar() {
             );
           })}
         </nav>
-        <PointsChip />
+        <div className="flex items-center gap-3">
+          <GameChip />
+          <PointsChip />
+        </div>
       </div>
     </header>
   );

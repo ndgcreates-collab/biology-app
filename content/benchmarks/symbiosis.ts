@@ -2,7 +2,7 @@ import { Benchmark, draftMeta } from "../schema";
 
 export const symbiosis: Benchmark = {
   id: "symbiosis",
-  code: "SC.912.L.17.A.2 (DRAFT — verify code on CPALMS)",
+  code: "SC.912.L.17.6",
   bigIdeaId: "A",
   title: "Symbiosis & Species Interactions",
   summary:

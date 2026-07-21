@@ -2,7 +2,7 @@ import { Benchmark, draftMeta } from "../schema";
 
 export const biogeochemicalCycles: Benchmark = {
   id: "biogeochemical-cycles",
-  code: "SC.912.L.17.B.2 (DRAFT — verify code on CPALMS)",
+  code: "SC.912.L.17.10",
   bigIdeaId: "B",
   title: "Biogeochemical Cycles",
   summary:
@@ -16,8 +16,10 @@ export const biogeochemicalCycles: Benchmark = {
     "Unlike energy (which flows through an ecosystem once and is lost as heat), matter is more like a library book — it gets passed around and reused over and over, never actually leaving the system.",
   vocabulary: [
     { term: "Biogeochemical cycle", definition: "The movement of a chemical element or molecule between living organisms and the non-living environment." },
+    { term: "Carbon cycle", definition: "The movement of carbon between the atmosphere (as CO₂), plants (via photosynthesis), animals (via feeding), and back to the atmosphere (via respiration and decomposition)." },
     { term: "Nitrogen fixation", definition: "The process by which certain bacteria convert atmospheric nitrogen gas into a usable form for plants." },
-    { term: "Respiration", definition: "The process by which organisms release stored energy, releasing CO2 as a byproduct." },
+    { term: "Respiration", definition: "The process by which organisms release stored energy, releasing CO₂ as a byproduct." },
   ],
+  diagramKeys: ["carbon-cycle"],
   meta: draftMeta(),
 };

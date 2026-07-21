@@ -2,6 +2,26 @@ import { QuizQuestion, draftMeta, POINTS_BY_DIFFICULTY } from "../schema";
 
 export const biogeochemicalCyclesQuestions: QuizQuestion[] = [
   {
+    id: "biogeo-image-1",
+    benchmarkId: "biogeochemical-cycles",
+    type: "multiple-choice",
+    prompt:
+      "Using the carbon cycle diagram, which two processes move carbon from an animal back to the atmosphere, and from the atmosphere into a plant?",
+    diagramKey: "carbon-cycle",
+    choices: [
+      "Respiration (animal → atmosphere) and photosynthesis (atmosphere → plant)",
+      "Photosynthesis (animal → atmosphere) and respiration (atmosphere → plant)",
+      "Feeding (animal → atmosphere) and decomposition (atmosphere → plant)",
+      "Evaporation (animal → atmosphere) and condensation (atmosphere → plant)",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Animals release CO₂ to the atmosphere through respiration, and plants pull CO₂ from the atmosphere through photosynthesis to build sugars.",
+    difficulty: "medium",
+    points: POINTS_BY_DIFFICULTY.medium,
+    meta: draftMeta(),
+  },
+  {
     id: "biogeo-1",
     benchmarkId: "biogeochemical-cycles",
     type: "multiple-choice",

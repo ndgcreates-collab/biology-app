@@ -1,4 +1,5 @@
 import { QuizQuestion } from "@/content/schema";
+import { Diagram } from "@/components/diagrams/registry";
 
 const difficultyColor: Record<QuizQuestion["difficulty"], string> = {
   easy: "bg-emerald-100 text-emerald-800",
@@ -26,6 +27,8 @@ export function QuestionCard({
         <span className="text-xs text-gray-500">{question.points} pts</span>
       </div>
       <p className="mt-3 text-lg font-medium text-gray-900">{question.prompt}</p>
+
+      {question.diagramKey && <Diagram diagramKey={question.diagramKey} showCaption={false} />}
 
       <div className="mt-4 space-y-2">
         {question.choices.map((choice, index) => {

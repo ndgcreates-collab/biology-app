@@ -2,7 +2,7 @@ import { Benchmark, draftMeta } from "../schema";
 
 export const energyFlowFoodWebs: Benchmark = {
   id: "energy-flow-food-webs",
-  code: "SC.912.L.17.B.1 (DRAFT — verify code on CPALMS)",
+  code: "SC.912.L.17.9",
   bigIdeaId: "B",
   title: "Energy Flow & Food Webs",
   summary:
@@ -15,6 +15,12 @@ export const energyFlowFoodWebs: Benchmark = {
   analogy:
     "Think of energy moving up a food chain like passing a nearly-empty water bottle up a line of people — each person only gets to keep about 10% of what's left, so by the fourth or fifth person there's almost nothing left to pass on.",
   vocabulary: [
+    { term: "Biotic", definition: "The living components of an ecosystem — plants, animals, fungi, and bacteria." },
+    { term: "Abiotic", definition: "The non-living components of an ecosystem — sunlight, water, temperature, soil, and air." },
+    { term: "Producer", definition: "An organism that makes its own food from sunlight via photosynthesis (e.g. plants, algae)." },
+    { term: "Primary consumer", definition: "An organism that eats producers; a herbivore (e.g. a grasshopper eating grass)." },
+    { term: "Secondary consumer", definition: "An organism that eats primary consumers (e.g. a frog eating a grasshopper)." },
+    { term: "Tertiary consumer", definition: "An organism that eats secondary consumers (e.g. a snake eating a frog)." },
     { term: "Trophic level", definition: "An organism's position in a food chain (producer, primary consumer, etc.)." },
     { term: "10% rule", definition: "Roughly only 10% of energy at one trophic level is available to the next level up." },
     { term: "Decomposer", definition: "An organism that breaks down dead organic material, recycling nutrients (not energy) back into the ecosystem." },

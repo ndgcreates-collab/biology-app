@@ -2,6 +2,26 @@ import { QuizQuestion, draftMeta, POINTS_BY_DIFFICULTY } from "../schema";
 
 export const populationDynamicsQuestions: QuizQuestion[] = [
   {
+    id: "pop-dyn-image-1",
+    benchmarkId: "population-dynamics",
+    type: "multiple-choice",
+    prompt:
+      "Look at the growth curves in the diagram. What does the red dashed line labeled K represent, and what is the green S-shaped curve doing as it approaches it?",
+    diagramKey: "logistic-growth",
+    choices: [
+      "K is the carrying capacity; the logistic curve levels off as the population nears it",
+      "K is the starting population; the curve grows exponentially forever",
+      "K is the extinction point; the curve drops to zero",
+      "K is the birth rate; the curve ignores it completely",
+    ],
+    correctIndex: 0,
+    explanation:
+      "The dashed line K is the carrying capacity — the maximum the environment can sustain. Logistic (S-shaped) growth slows and levels off near K, unlike the exponential (J-shaped) curve that keeps rising.",
+    difficulty: "medium",
+    points: POINTS_BY_DIFFICULTY.medium,
+    meta: draftMeta(),
+  },
+  {
     id: "pop-dyn-1",
     benchmarkId: "population-dynamics",
     type: "multiple-choice",
