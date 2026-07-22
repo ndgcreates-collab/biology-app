@@ -38,7 +38,12 @@ export default function HostPage() {
 
   return (
     <PageContainer>
-      <h1 className="text-2xl font-bold text-gray-900">Teacher: Host a Game</h1>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h1 className="text-2xl font-bold text-gray-900">Teacher: Host a Game</h1>
+        <Link href="/host/create-quiz" className="text-sm font-medium text-emerald-700 hover:underline">
+          + Create a quiz
+        </Link>
+      </div>
       <p className="mt-1 text-sm text-gray-600">
         Create a game, share the game code with your students, and keep the results PIN private so
         only you can see their scores.

@@ -22,6 +22,44 @@ interface DbQuestionRow {
   diagram_key: string | null;
 }
 
+export interface NewQuizQuestion {
+  prompt: string;
+  choices: string[];
+  correct_index: number;
+  explanation?: string;
+  difficulty: "easy" | "medium" | "hard";
+  points: number;
+  benchmark_id?: string;
+  diagram_key?: string;
+}
+
+function friendlyCreateError(message: string): string {
+  if (message.includes("BAD_PIN")) return "That author passcode is incorrect.";
+  if (message.includes("TITLE_REQUIRED")) return "Please give the quiz a title.";
+  if (message.includes("NO_QUESTIONS")) return "Add at least one question.";
+  if (message.includes("QUESTION_NEEDS_PROMPT")) return "Every question needs a prompt.";
+  if (message.includes("QUESTION_NEEDS_CHOICES")) return "Every question needs at least two answer choices.";
+  if (message.includes("BAD_CORRECT_INDEX")) return "Every question needs a valid correct answer selected.";
+  return message;
+}
+
+/** Creates a quiz in Supabase (passcode-gated). Returns the new quiz slug. */
+export async function createQuiz(args: {
+  pin: string;
+  title: string;
+  description?: string;
+  questions: NewQuizQuestion[];
+}): Promise<{ slug: string; question_count: number }> {
+  const { data, error } = await supabase.rpc("create_quiz", {
+    p_pin: args.pin,
+    p_title: args.title,
+    p_description: args.description ?? "",
+    p_questions: args.questions,
+  });
+  if (error) throw new Error(friendlyCreateError(error.message));
+  return data as { slug: string; question_count: number };
+}
+
 /** All published quizzes authored in Supabase. */
 export async function listDbQuizzes(): Promise<DbQuiz[]> {
   const { data, error } = await supabase
