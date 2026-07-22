@@ -1,0 +1,8 @@
+1:"$Sreact.fragment"
+2:I[5205,["998","static/chunks/998-a39eaccfa633ed71.js","316","static/chunks/app/progress/page-188f2e5a026a97a5.js"],"StreakDisplay"]
+3:I[5498,["998","static/chunks/998-a39eaccfa633ed71.js","316","static/chunks/app/progress/page-188f2e5a026a97a5.js"],"MasteryGrid"]
+4:I[3713,["998","static/chunks/998-a39eaccfa633ed71.js","316","static/chunks/app/progress/page-188f2e5a026a97a5.js"],"PointsLedger"]
+5:I[484,[],"OutletBoundary"]
+6:"$Sreact.suspense"
+0:{"rsc":["$","$1","c",{"children":[["$","main",null,{"className":"mx-auto w-full max-w-4xl flex-1 px-4 py-8","children":[["$","h1",null,{"className":"text-2xl font-bold text-gray-900","children":"My Progress"}],["$","div",null,{"className":"mt-4","children":["$","$L2",null,{}]}],["$","h2",null,{"className":"mt-8 text-sm font-semibold uppercase tracking-wide text-gray-500","children":"Benchmark mastery"}],["$","div",null,{"className":"mt-3","children":["$","$L3",null,{}]}],["$","h2",null,{"className":"mt-8 text-sm font-semibold uppercase tracking-wide text-gray-500","children":"Points history"}],["$","div",null,{"className":"mt-3","children":["$","$L4",null,{}]}]]}],null,["$","$L5",null,{"children":["$","$6",null,{"name":"Next.MetadataOutlet","children":"$@7"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"5QLvwhwxKIOPFwr72uv4t"}
+7:null
