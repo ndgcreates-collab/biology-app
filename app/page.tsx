@@ -54,6 +54,15 @@ export default function Home() {
           </p>
         </Link>
         <Link
+          href="/survival"
+          className="rounded-xl border border-gray-200 bg-white p-5 transition hover:shadow-md"
+        >
+          <h3 className="font-bold text-gray-900">🌲 Survival game</h3>
+          <p className="mt-1 text-sm text-gray-600">
+            Survive a deforesting forest across 5 achievement levels.
+          </p>
+        </Link>
+        <Link
           href="/rewards"
           className="rounded-xl border border-gray-200 bg-white p-5 transition hover:shadow-md"
         >
