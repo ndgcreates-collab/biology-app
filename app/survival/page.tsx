@@ -27,8 +27,8 @@ export default function SurvivalPage() {
           <h1 className="mt-2 text-2xl font-bold text-gray-900">Ecosystem Survival</h1>
           <p className="mx-auto mt-2 max-w-md text-sm text-gray-600">
             Create a survivor and drop into a forest where deforestation is unfolding. Answer
-            scenario challenges to stay alive and climb the Florida Biology EOC achievement levels —
-            from basic recognition all the way to mastery.
+            scenario challenges to stay alive and climb the achievement levels — from basic
+            recognition all the way to mastery.
           </p>
           <Link
             href="/survival/avatar"
