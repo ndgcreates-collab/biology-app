@@ -25,6 +25,7 @@ export const level2: SurvivalLevel = {
         "You spot grasshoppers eating grass, and a frog eating the grasshoppers. You're deciding where in this chain to look for reliable energy.",
       question: {
         prompt: "Where does a primary consumer, like the grasshopper, get its energy?",
+        diagramKey: "food-chain",
         choices: [
           "By eating producers, such as grass",
           "Directly from sunlight",

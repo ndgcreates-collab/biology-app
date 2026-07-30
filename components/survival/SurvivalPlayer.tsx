@@ -8,6 +8,7 @@ import { useProgressStore } from "@/lib/store/useProgressStore";
 import { useGameStore } from "@/lib/store/useGameStore";
 import { submitResult } from "@/lib/supabase/games";
 import { AvatarBadge } from "./AvatarBadge";
+import { SurvivalScene } from "./SurvivalScene";
 import { HeartsHud, HealthHud } from "./SurvivalHud";
 import { Diagram } from "@/components/diagrams/registry";
 import { QUIZ_COMPLETION_BONUS } from "@/content/schema";
@@ -153,8 +154,10 @@ export function SurvivalPlayer({ level }: { level: SurvivalLevel }) {
             Level {level.order} · {isHearts ? "❤️ Hearts" : "🩸 Health"}
           </span>
         </div>
-        <div className="mt-4 text-center text-5xl">{level.emoji}</div>
-        <h1 className="mt-2 text-center text-2xl font-bold text-gray-900">{level.title}</h1>
+        <div className="mt-4">
+          <SurvivalScene order={level.order} avatarEmoji={avatar.emoji} />
+        </div>
+        <h1 className="mt-3 text-center text-2xl font-bold text-gray-900">{level.title}</h1>
         <p className="mt-3 text-gray-700 leading-relaxed">{level.intro}</p>
         <p className="mt-3 text-xs text-gray-500">
           {isHearts
@@ -215,6 +218,9 @@ export function SurvivalPlayer({ level }: { level: SurvivalLevel }) {
   // --- Playing screen ---
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-6">
+      <div className="mb-4">
+        <SurvivalScene order={level.order} avatarEmoji={avatar.emoji} />
+      </div>
       <div className="flex items-center justify-between">
         <span className="text-xs font-semibold uppercase tracking-wide text-gray-400">
           {level.emoji} Level {level.order} · Step {stepIndex + 1}/{level.steps.length}

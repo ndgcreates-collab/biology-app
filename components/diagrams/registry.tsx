@@ -3,6 +3,8 @@ import { CarbonCycleDiagram } from "./CarbonCycleDiagram";
 import { BiomagnificationDiagram } from "./BiomagnificationDiagram";
 import { EutrophicationDiagram } from "./EutrophicationDiagram";
 import { DeforestationDiagram } from "./DeforestationDiagram";
+import { PopulationCrashDiagram } from "./PopulationCrashDiagram";
+import { FoodChainDiagram } from "./FoodChainDiagram";
 
 // Diagrams are referenced from content data by a stable string key, so the
 // content stays plain serializable data while the visuals live in code.
@@ -12,6 +14,8 @@ export const diagramRegistry: Record<string, { title: string; Component: React.C
   "biomagnification": { title: "Biomagnification up a food chain", Component: BiomagnificationDiagram },
   "eutrophication": { title: "Eutrophication of a pond", Component: EutrophicationDiagram },
   "deforestation": { title: "Deforestation: before and after", Component: DeforestationDiagram },
+  "population-crash": { title: "Deer population after forest clearing", Component: PopulationCrashDiagram },
+  "food-chain": { title: "Forest food chain and energy transfer", Component: FoodChainDiagram },
 };
 
 export type DiagramKey = keyof typeof diagramRegistry;

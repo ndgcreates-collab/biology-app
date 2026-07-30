@@ -27,6 +27,7 @@ export const level5: SurvivalLevel = {
       question: {
         prompt:
           "Analyze the data: what best explains the deer spiking and then crashing below the original level?",
+        diagramKey: "population-crash",
         choices: [
           "Loss of habitat lowered carrying capacity; the herd briefly overshot it, then died off past the new, lower limit",
           "Deforestation permanently raised the carrying capacity",
