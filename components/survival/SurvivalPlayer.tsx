@@ -219,7 +219,11 @@ export function SurvivalPlayer({ level }: { level: SurvivalLevel }) {
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-6">
       <div className="mb-4">
-        <SurvivalScene order={level.order} avatarEmoji={avatar.emoji} />
+        <SurvivalScene
+          order={level.order}
+          avatarEmoji={avatar.emoji}
+          mood={submitted ? (wasCorrect ? "cheer" : "hurt") : "idle"}
+        />
       </div>
       <div className="flex items-center justify-between">
         <span className="text-xs font-semibold uppercase tracking-wide text-gray-400">
