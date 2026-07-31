@@ -22,8 +22,10 @@ interface SurvivalState {
   avatar: Avatar | null;
   unlockedAccessories: string[]; // accessory ids awarded for surviving levels
   levelOutcomes: Record<string, LevelOutcome>; // keyed by level id
+  soundOn: boolean;
 
   setAvatar: (avatar: Avatar) => void;
+  toggleSound: () => void;
   completeLevel: (
     levelId: string,
     result: { survived: boolean; score: number; total: number; accessoryId?: string }
@@ -37,8 +39,10 @@ export const useSurvivalStore = create<SurvivalState>()(
       avatar: null,
       unlockedAccessories: [],
       levelOutcomes: {},
+      soundOn: false,
 
       setAvatar: (avatar) => set({ avatar }),
+      toggleSound: () => set((s) => ({ soundOn: !s.soundOn })),
 
       completeLevel: (levelId, result) => {
         const state = get();

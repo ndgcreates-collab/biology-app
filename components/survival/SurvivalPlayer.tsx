@@ -10,8 +10,10 @@ import { submitResult } from "@/lib/supabase/games";
 import { AvatarBadge } from "./AvatarBadge";
 import { SurvivalScene } from "./SurvivalScene";
 import { HeartsHud, HealthHud } from "./SurvivalHud";
+import { JuiceOverlay } from "./JuiceOverlay";
 import { Diagram } from "@/components/diagrams/registry";
 import { QUIZ_COMPLETION_BONUS } from "@/content/schema";
+import { sfx } from "@/lib/survival/sfx";
 
 const HEAL_ON_CORRECT = 5;
 const pointsForLevel = (al: AchievementLevel) => (al <= 2 ? 10 : al === 3 ? 15 : al === 4 ? 20 : 25);
@@ -26,7 +28,12 @@ interface AnswerRecord {
 export function SurvivalPlayer({ level }: { level: SurvivalLevel }) {
   const avatar = useSurvivalStore((s) => s.avatar);
   const completeLevel = useSurvivalStore((s) => s.completeLevel);
+  const soundOn = useSurvivalStore((s) => s.soundOn);
+  const toggleSound = useSurvivalStore((s) => s.toggleSound);
   const recordQuizResult = useProgressStore((s) => s.recordQuizResult);
+
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [juice, setJuice] = useState<{ id: number; kind: "correct" | "wrong"; points: number } | null>(null);
 
   const isHearts = level.mechanic === "hearts";
   const [phase, setPhase] = useState<"intro" | "playing" | "result">("intro");
@@ -67,6 +74,7 @@ export function SurvivalPlayer({ level }: { level: SurvivalLevel }) {
     // Points, mastery, badges, ledger via the shared progress store.
     recordQuizResult({ quizId: `survival-${level.id}`, benchmarkIds, answers: finalAnswers });
     setPointsEarned(earnedFromAnswers + bonus);
+    if (soundOn) (didSurvive ? sfx.survive : sfx.fail)();
 
     // Survival-specific progress + accessory unlock.
     completeLevel(level.id, {
@@ -122,6 +130,23 @@ export function SurvivalPlayer({ level }: { level: SurvivalLevel }) {
       setHp((v) => v + delta);
     }
     setSubmitted(true);
+
+    // Game juice: burst/points on correct, shake/flash + sfx on wrong.
+    setJuice({ id: Date.now(), kind: correct ? "correct" : "wrong", points: pointsForLevel(step.question.achievementLevel) });
+    if (!correct && cardRef.current) {
+      cardRef.current.animate(
+        [
+          { transform: "translateX(0)" },
+          { transform: "translateX(-7px)" },
+          { transform: "translateX(7px)" },
+          { transform: "translateX(-5px)" },
+          { transform: "translateX(5px)" },
+          { transform: "translateX(0)" },
+        ],
+        { duration: 450, easing: "ease-in-out" }
+      );
+    }
+    if (soundOn) (correct ? sfx.correct : sfx.wrong)();
   }
 
   function handleContinue() {
@@ -217,7 +242,8 @@ export function SurvivalPlayer({ level }: { level: SurvivalLevel }) {
 
   // --- Playing screen ---
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-6">
+    <div ref={cardRef} className="relative overflow-hidden rounded-xl border border-gray-200 bg-white p-6">
+      {juice && <JuiceOverlay key={juice.id} kind={juice.kind} points={juice.points} />}
       <div className="mb-4">
         <SurvivalScene
           order={level.order}
@@ -225,11 +251,21 @@ export function SurvivalPlayer({ level }: { level: SurvivalLevel }) {
           mood={submitted ? (wasCorrect ? "cheer" : "hurt") : "idle"}
         />
       </div>
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold uppercase tracking-wide text-gray-400">
-          {level.emoji} Level {level.order} · Step {stepIndex + 1}/{level.steps.length}
+      <div className="flex items-center justify-between gap-2 rounded-lg bg-gray-900 px-3 py-2 text-white">
+        <span className="text-xs font-semibold uppercase tracking-wide text-gray-300">
+          {level.emoji} Lvl {level.order} · Step {stepIndex + 1}/{level.steps.length}
         </span>
-        {isHearts ? <HeartsHud hearts={hearts} max={level.startingHearts ?? HEARTS_START} /> : <HealthHud hp={hp} max={level.startingHp ?? HP_START} />}
+        <div className="flex items-center gap-3">
+          {isHearts ? <HeartsHud hearts={hearts} max={level.startingHearts ?? HEARTS_START} /> : <HealthHud hp={hp} max={level.startingHp ?? HP_START} />}
+          <button
+            type="button"
+            onClick={toggleSound}
+            aria-label={soundOn ? "Mute sound" : "Enable sound"}
+            className="rounded px-1.5 py-0.5 text-base hover:bg-white/10"
+          >
+            {soundOn ? "🔊" : "🔇"}
+          </button>
+        </div>
       </div>
 
       {!isHearts && step.hazard && (
