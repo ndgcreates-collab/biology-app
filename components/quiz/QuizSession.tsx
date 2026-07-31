@@ -10,10 +10,22 @@ import { useProgressStore } from "@/lib/store/useProgressStore";
 import { useGameStore } from "@/lib/store/useGameStore";
 import { submitResult } from "@/lib/supabase/games";
 import { badges } from "@/content/rewards/badges";
+import { seededShuffleChoices } from "@/lib/shuffle";
 
-export function QuizSession({ topicId, questions }: { topicId: string; questions: QuizQuestion[] }) {
+export function QuizSession({ topicId, questions: rawQuestions }: { topicId: string; questions: QuizQuestion[] }) {
   const reactId = useId();
   const quizId = `quiz-${topicId}-${reactId}`;
+
+  // Shuffle each question's choices (stable per question id) so the correct
+  // answer isn't always in the same position.
+  const questions = useMemo(
+    () =>
+      rawQuestions.map((q) => {
+        const s = seededShuffleChoices(q.choices, q.correctIndex, q.id);
+        return { ...q, choices: s.choices, correctIndex: s.correctIndex };
+      }),
+    [rawQuestions]
+  );
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [submitted, setSubmitted] = useState(false);

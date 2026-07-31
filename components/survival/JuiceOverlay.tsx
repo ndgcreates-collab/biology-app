@@ -26,7 +26,15 @@ function makePieces(): Piece[] {
 
 // A one-shot burst of effects rendered over the scene. Remount (via a React
 // `key`) to replay it on each answer.
-export function JuiceOverlay({ kind, points }: { kind: "correct" | "wrong"; points: number }) {
+export function JuiceOverlay({
+  kind,
+  points,
+  combo = 0,
+}: {
+  kind: "correct" | "wrong";
+  points: number;
+  combo?: number;
+}) {
   if (kind === "wrong") {
     return (
       <div className="pointer-events-none absolute inset-0 z-10 overflow-hidden">
@@ -42,8 +50,11 @@ export function JuiceOverlay({ kind, points }: { kind: "correct" | "wrong"; poin
     <div className="pointer-events-none absolute inset-0 z-10 overflow-hidden">
       <div className="sv-flash-green absolute inset-0 bg-emerald-400" />
       <Confetti />
-      <div className="sv-float-up absolute left-1/2 top-20 text-xl font-black text-emerald-600 drop-shadow">
-        +{points}
+      <div className="sv-float-up absolute left-1/2 top-20 text-center">
+        <div className="text-xl font-black text-emerald-600 drop-shadow">+{points}</div>
+        {combo >= 2 && (
+          <div className="text-sm font-black text-orange-500 drop-shadow">🔥 {combo}× COMBO!</div>
+        )}
       </div>
     </div>
   );

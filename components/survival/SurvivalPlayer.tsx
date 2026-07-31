@@ -14,9 +14,17 @@ import { JuiceOverlay } from "./JuiceOverlay";
 import { Diagram } from "@/components/diagrams/registry";
 import { QUIZ_COMPLETION_BONUS } from "@/content/schema";
 import { sfx } from "@/lib/survival/sfx";
+import { seededShuffleChoices } from "@/lib/shuffle";
+import { survivalLevels } from "@/content/survival";
 
 const HEAL_ON_CORRECT = 5;
 const pointsForLevel = (al: AchievementLevel) => (al <= 2 ? 10 : al === 3 ? 15 : al === 4 ? 20 : 25);
+const COMBO_BONUS = 5; // extra points per step of an active streak
+
+// Map unlocked accessory ids -> their icons (defined on each level's reward).
+const accessoryIconById: Record<string, string> = Object.fromEntries(
+  survivalLevels.map((l) => [l.rewardAccessory.id, l.rewardAccessory.icon])
+);
 
 interface AnswerRecord {
   questionId: string;
@@ -30,10 +38,11 @@ export function SurvivalPlayer({ level }: { level: SurvivalLevel }) {
   const completeLevel = useSurvivalStore((s) => s.completeLevel);
   const soundOn = useSurvivalStore((s) => s.soundOn);
   const toggleSound = useSurvivalStore((s) => s.toggleSound);
+  const unlockedAccessories = useSurvivalStore((s) => s.unlockedAccessories);
   const recordQuizResult = useProgressStore((s) => s.recordQuizResult);
 
   const cardRef = useRef<HTMLDivElement>(null);
-  const [juice, setJuice] = useState<{ id: number; kind: "correct" | "wrong"; points: number } | null>(null);
+  const [juice, setJuice] = useState<{ id: number; kind: "correct" | "wrong"; points: number; combo: number } | null>(null);
 
   const isHearts = level.mechanic === "hearts";
   const [phase, setPhase] = useState<"intro" | "playing" | "result">("intro");
@@ -45,7 +54,11 @@ export function SurvivalPlayer({ level }: { level: SurvivalLevel }) {
   const [answers, setAnswers] = useState<AnswerRecord[]>([]);
   const [survived, setSurvived] = useState(false);
   const [pointsEarned, setPointsEarned] = useState(0);
+  const [combo, setCombo] = useState(0);
+  const [walking, setWalking] = useState(false);
   const finalizedRef = useRef(false);
+
+  const accessoryIcons = unlockedAccessories.map((id) => accessoryIconById[id]).filter(Boolean);
 
   if (!avatar) {
     return (
@@ -59,8 +72,10 @@ export function SurvivalPlayer({ level }: { level: SurvivalLevel }) {
   }
 
   const step = level.steps[stepIndex];
+  // Shuffle choices (stable per step id) so the correct answer isn't always first.
+  const presented = seededShuffleChoices(step.question.choices, step.question.correctIndex, step.id);
   const isLastStep = stepIndex === level.steps.length - 1;
-  const wasCorrect = submitted && selected === step.question.correctIndex;
+  const wasCorrect = submitted && selected === presented.correctIndex;
 
   function finalize(didSurvive: boolean, finalAnswers: AnswerRecord[]) {
     if (finalizedRef.current) return;
@@ -108,14 +123,22 @@ export function SurvivalPlayer({ level }: { level: SurvivalLevel }) {
 
   function handleSubmit() {
     if (selected === null) return;
-    const correct = selected === step.question.correctIndex;
+    const correct = selected === presented.correctIndex;
+
+    // Combo: consecutive correct answers add a streak bonus; a miss resets it.
+    const newCombo = correct ? combo + 1 : 0;
+    setCombo(newCombo);
+    const base = pointsForLevel(step.question.achievementLevel);
+    const comboBonus = correct && newCombo >= 2 ? (newCombo - 1) * COMBO_BONUS : 0;
+    const pointsThisStep = correct ? base + comboBonus : base;
+
     setAnswers((prev) => [
       ...prev,
       {
         questionId: step.id,
         benchmarkId: step.question.benchmarkId,
         correct,
-        pointsAwarded: pointsForLevel(step.question.achievementLevel),
+        pointsAwarded: pointsThisStep,
       },
     ]);
 
@@ -132,7 +155,7 @@ export function SurvivalPlayer({ level }: { level: SurvivalLevel }) {
     setSubmitted(true);
 
     // Game juice: burst/points on correct, shake/flash + sfx on wrong.
-    setJuice({ id: Date.now(), kind: correct ? "correct" : "wrong", points: pointsForLevel(step.question.achievementLevel) });
+    setJuice({ id: Date.now(), kind: correct ? "correct" : "wrong", points: pointsThisStep, combo: newCombo });
     if (!correct && cardRef.current) {
       cardRef.current.animate(
         [
@@ -164,9 +187,15 @@ export function SurvivalPlayer({ level }: { level: SurvivalLevel }) {
       setPhase("result");
       return;
     }
-    setStepIndex((i) => i + 1);
-    setSelected(null);
-    setSubmitted(false);
+    // Walk to the next area, then reveal the next challenge.
+    setJuice(null);
+    setWalking(true);
+    setTimeout(() => {
+      setStepIndex((i) => i + 1);
+      setSelected(null);
+      setSubmitted(false);
+      setWalking(false);
+    }, 900);
   }
 
   // --- Intro screen ---
@@ -180,7 +209,7 @@ export function SurvivalPlayer({ level }: { level: SurvivalLevel }) {
           </span>
         </div>
         <div className="mt-4">
-          <SurvivalScene order={level.order} avatarEmoji={avatar.emoji} />
+          <SurvivalScene order={level.order} avatarEmoji={avatar.emoji} accessories={accessoryIcons} />
         </div>
         <h1 className="mt-3 text-center text-2xl font-bold text-gray-900">{level.title}</h1>
         <p className="mt-3 text-gray-700 leading-relaxed">{level.intro}</p>
@@ -243,12 +272,13 @@ export function SurvivalPlayer({ level }: { level: SurvivalLevel }) {
   // --- Playing screen ---
   return (
     <div ref={cardRef} className="relative overflow-hidden rounded-xl border border-gray-200 bg-white p-6">
-      {juice && <JuiceOverlay key={juice.id} kind={juice.kind} points={juice.points} />}
+      {juice && <JuiceOverlay key={juice.id} kind={juice.kind} points={juice.points} combo={juice.combo} />}
       <div className="mb-4">
         <SurvivalScene
           order={level.order}
           avatarEmoji={avatar.emoji}
-          mood={submitted ? (wasCorrect ? "cheer" : "hurt") : "idle"}
+          accessories={accessoryIcons}
+          mood={walking ? "walk" : submitted ? (wasCorrect ? "cheer" : "hurt") : "idle"}
         />
       </div>
       <div className="flex items-center justify-between gap-2 rounded-lg bg-gray-900 px-3 py-2 text-white">
@@ -256,6 +286,11 @@ export function SurvivalPlayer({ level }: { level: SurvivalLevel }) {
           {level.emoji} Lvl {level.order} · Step {stepIndex + 1}/{level.steps.length}
         </span>
         <div className="flex items-center gap-3">
+          {combo >= 2 && (
+            <span className="rounded-full bg-orange-500 px-2 py-0.5 text-xs font-bold text-white">
+              🔥 x{combo}
+            </span>
+          )}
           {isHearts ? <HeartsHud hearts={hearts} max={level.startingHearts ?? HEARTS_START} /> : <HealthHud hp={hp} max={level.startingHp ?? HP_START} />}
           <button
             type="button"
@@ -268,6 +303,12 @@ export function SurvivalPlayer({ level }: { level: SurvivalLevel }) {
         </div>
       </div>
 
+      {walking ? (
+        <p className="mt-6 text-center text-sm font-medium text-gray-500">
+          {avatar.emoji} Trekking deeper into the forest…
+        </p>
+      ) : (
+      <>
       {!isHearts && step.hazard && (
         <div className="mt-3 rounded-md bg-rose-50 px-3 py-2 text-sm text-rose-800 ring-1 ring-inset ring-rose-200">
           {step.hazard.icon} Hazard: {step.hazard.name}
@@ -281,9 +322,9 @@ export function SurvivalPlayer({ level }: { level: SurvivalLevel }) {
       <p className="mt-4 text-lg font-medium text-gray-900">{step.question.prompt}</p>
 
       <div className="mt-4 space-y-2">
-        {step.question.choices.map((choice, index) => {
+        {presented.choices.map((choice, index) => {
           const isSelected = selected === index;
-          const isCorrectChoice = index === step.question.correctIndex;
+          const isCorrectChoice = index === presented.correctIndex;
           let cls = "border-gray-200 hover:border-emerald-300";
           if (submitted) {
             if (isCorrectChoice) cls = "border-emerald-500 bg-emerald-50";
@@ -334,6 +375,8 @@ export function SurvivalPlayer({ level }: { level: SurvivalLevel }) {
           </button>
         )}
       </div>
+      </>
+      )}
     </div>
   );
 }

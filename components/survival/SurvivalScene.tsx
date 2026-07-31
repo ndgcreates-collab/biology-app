@@ -1,16 +1,18 @@
-export type SceneMood = "idle" | "cheer" | "hurt";
+export type SceneMood = "idle" | "cheer" | "hurt" | "walk";
 
 // A themed, game-style scene that places the student's ANIMATED avatar in the
-// environment: parallax layers, drifting particles, a character shadow, and a
-// vignette frame. The forest visibly degrades as the level rises.
+// environment: parallax layers, drifting particles, a character shadow, worn
+// gear, and a vignette frame. The forest visibly degrades as the level rises.
 export function SurvivalScene({
   order,
   avatarEmoji,
   mood = "idle",
+  accessories = [],
 }: {
   order: number;
   avatarEmoji: string;
   mood?: SceneMood;
+  accessories?: string[];
 }) {
   const d = Math.min(4, Math.max(0, order - 1)); // devastation 0..4
 
@@ -28,7 +30,12 @@ export function SurvivalScene({
       ? { values: "0 0; 0 -24; 0 0; 0 -12; 0 0", dur: "0.8s" }
       : mood === "hurt"
         ? { values: "0 0; -5 0; 5 0; -4 0; 4 0; 0 0", dur: "0.45s" }
-        : { values: "0 0; 0 -5; 0 0", dur: "2s" };
+        : mood === "walk"
+          ? { values: "0 0; 0 -6; 0 0; 0 -6; 0 0", dur: "0.42s" }
+          : { values: "0 0; 0 -5; 0 0", dur: "2s" };
+
+  const crown = accessories.find((a) => a === "👑");
+  const heldGear = accessories.filter((a) => a !== "👑");
 
   // Drifting ambient particles: leaves early, ash/embers as it collapses.
   const isEmber = d >= 3;
@@ -124,11 +131,29 @@ export function SurvivalScene({
         <animate attributeName="rx" values="22;18;22" dur={avatarAnim.dur} repeatCount="indefinite" />
       </ellipse>
 
-      {/* the animated avatar */}
+      {/* walk dust */}
+      {mood === "walk" && (
+        <text x="176" y="128" fontSize="16">
+          💨
+          <animate attributeName="opacity" values="0.9;0.2;0.9" dur="0.42s" repeatCount="indefinite" />
+        </text>
+      )}
+
+      {/* the animated avatar, wearing any unlocked gear */}
       <g key={mood}>
         <animateTransform attributeName="transform" type="translate"
           values={avatarAnim.values} dur={avatarAnim.dur} repeatCount="indefinite" />
+        {crown && (
+          <text x="200" y="92" fontSize="18" textAnchor="middle">
+            {crown}
+          </text>
+        )}
         <text x="200" y="126" fontSize="42" textAnchor="middle">{avatarEmoji}</text>
+        {heldGear.map((g, i) => (
+          <text key={g} x={228 + i * 15} y={118 + (i % 2) * 10} fontSize="14">
+            {g}
+          </text>
+        ))}
       </g>
 
       {/* flickering fire when the ecosystem collapses */}
